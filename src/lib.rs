@@ -1,14 +1,10 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+#![warn(missing_docs)]
+#![forbid(unsafe_code)]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+//! Different reference kinds in Rust.
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use kind::RefKind;
+pub use map::RefKindMap;
+
+mod kind;
+mod map;
