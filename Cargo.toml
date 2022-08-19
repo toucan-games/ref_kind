@@ -1,6 +1,8 @@
 [package]
 name = "ref_kind"
 version = "0.0.0"
+description = "Different reference kinds"
 authors = ["tuguzT <timurka.tugushev@gmail.com>"]
 repository = "https://github.com/toucan-rust/ref_kind"
+license = "MIT OR Apache-2.0"
 edition = "2021"
