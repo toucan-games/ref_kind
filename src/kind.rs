@@ -1,8 +1,9 @@
 /// Provides different kinds of reference:
 /// [immutable](RefKind::Ref) or [mutable](RefKind::Mut) one.
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum RefKind<'a, T>
 where
-    T: ?Sized,
+    T: ?Sized + 'a,
 {
     /// Immutable kind of reference.
     Ref(&'a T),
@@ -10,11 +11,34 @@ where
     Mut(&'a mut T),
 }
 
+impl<'a, T> RefKind<'a, T>
+where
+    T: ?Sized + 'a,
+{
+    /// Returns an immutable reference from the struct.
+    pub fn get(&self) -> &T {
+        match self {
+            RefKind::Ref(r#ref) => *r#ref,
+            RefKind::Mut(r#mut) => &**r#mut,
+        }
+    }
+
+    /// Returns [`Some`] with a mutable reference from the struct
+    /// or [`None`] if contained reference is immutable.
+    pub fn get_mut(&mut self) -> Option<&mut T> {
+        match self {
+            RefKind::Ref(_) => None,
+            RefKind::Mut(r#mut) => Some(*r#mut),
+        }
+    }
+}
+
 /// Convert immutable reference into [`RefKind`].
 impl<'a, T> From<&'a T> for RefKind<'a, T>
 where
-    T: ?Sized,
+    T: ?Sized + 'a,
 {
+    // Converts to [`RefKind::Ref`] from the immutable reference.
     fn from(r#ref: &'a T) -> Self {
         Self::Ref(r#ref)
     }
@@ -23,8 +47,9 @@ where
 /// Convert mutable reference into [`RefKind`].
 impl<'a, T> From<&'a mut T> for RefKind<'a, T>
 where
-    T: ?Sized,
+    T: ?Sized + 'a,
 {
+    // Converts to [`RefKind::Mut`] from the mutable reference.
     fn from(r#mut: &'a mut T) -> Self {
         Self::Mut(r#mut)
     }

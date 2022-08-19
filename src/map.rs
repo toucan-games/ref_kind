@@ -9,17 +9,17 @@ use crate::kind::RefKind;
 /// This type provides methods for retrieving references (either immutable or mutable)
 /// by moving them out of the map to preserve specified lifetime of the owner.
 #[repr(transparent)]
-pub struct RefKindMap<'data, K, V, S = RandomState>
+pub struct RefKindMap<'a, K, V, S = RandomState>
 where
-    V: ?Sized,
+    V: ?Sized + 'a,
 {
-    map: HashMap<K, Option<RefKind<'data, V>>, S>,
+    map: HashMap<K, Option<RefKind<'a, V>>, S>,
 }
 
-impl<'data, K, V, S> RefKindMap<'data, K, V, S>
+impl<'a, K, V, S> RefKindMap<'a, K, V, S>
 where
     K: Eq + Hash,
-    V: ?Sized,
+    V: ?Sized + 'a,
     S: BuildHasher,
 {
     /// Returns an immutable reference of the value without preserving lifetime of the owner.
@@ -30,10 +30,7 @@ where
     pub fn get_ref(&self, key: &K) -> Option<&V> {
         let option = self.map.get(key)?.as_ref();
         let ref_kind = option.expect(BORROWED_MUTABLY);
-        let r#ref = match ref_kind {
-            RefKind::Ref(r#ref) => *r#ref,
-            RefKind::Mut(r#ref) => &**r#ref,
-        };
+        let r#ref = ref_kind.get();
         Some(r#ref)
     }
 
@@ -46,10 +43,7 @@ where
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         let option = self.map.get_mut(key)?.as_mut();
         let ref_kind = option.expect(BORROWED_MUTABLY);
-        let r#mut = match ref_kind {
-            RefKind::Ref(_) => borrowed_immutably_error(),
-            RefKind::Mut(r#mut) => &mut **r#mut,
-        };
+        let r#mut = ref_kind.get_mut().expect(BORROWED_IMMUTABLY);
         Some(r#mut)
     }
 
@@ -61,7 +55,7 @@ where
     /// ## Panics
     ///
     /// Panics if mutable reference of the value was already moved out of the map.
-    pub fn move_ref(&mut self, key: K) -> Option<&'data V> {
+    pub fn move_ref(&mut self, key: K) -> Option<&'a V> {
         let option = self.map.get(&key)?.as_ref();
         let ref_kind = option.expect(BORROWED_MUTABLY);
         let r#ref = match ref_kind {
@@ -89,7 +83,7 @@ where
     ///
     /// Panics if mutable reference of the value was already moved out of the map
     /// or the value was already borrowed as immutable.
-    pub fn move_mut(&mut self, key: K) -> Option<&'data mut V> {
+    pub fn move_mut(&mut self, key: K) -> Option<&'a mut V> {
         let option = self.map.remove(&key)?;
         let ref_kind = option.expect(BORROWED_MUTABLY);
         let r#mut = match ref_kind {
@@ -107,10 +101,10 @@ where
     }
 }
 
-impl<K, V, S> Default for RefKindMap<'_, K, V, S>
+impl<'a, K, V, S> Default for RefKindMap<'a, K, V, S>
 where
     K: Eq + Hash,
-    V: ?Sized,
+    V: ?Sized + 'a,
     S: Default,
 {
     /// Constructs an empty map, with the [Default] value for the hasher.
@@ -120,13 +114,13 @@ where
     }
 }
 
-impl<'data, K, V, S> FromIterator<(K, &'data V)> for RefKindMap<'data, K, V, S>
+impl<'a, K, V, S> FromIterator<(K, &'a V)> for RefKindMap<'a, K, V, S>
 where
     K: Eq + Hash,
-    V: ?Sized,
+    V: ?Sized + 'a,
     S: BuildHasher + Default,
 {
-    fn from_iter<T: IntoIterator<Item = (K, &'data V)>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = (K, &'a V)>>(iter: T) -> Self {
         let map = iter
             .into_iter()
             .map(|(k, v)| (k, Some(RefKind::Ref(v))))
@@ -135,13 +129,13 @@ where
     }
 }
 
-impl<'data, K, V, S> FromIterator<(K, &'data mut V)> for RefKindMap<'data, K, V, S>
+impl<'a, K, V, S> FromIterator<(K, &'a mut V)> for RefKindMap<'a, K, V, S>
 where
     K: Eq + Hash,
-    V: ?Sized,
+    V: ?Sized + 'a,
     S: BuildHasher + Default,
 {
-    fn from_iter<T: IntoIterator<Item = (K, &'data mut V)>>(iter: T) -> Self {
+    fn from_iter<T: IntoIterator<Item = (K, &'a mut V)>>(iter: T) -> Self {
         let map = iter
             .into_iter()
             .map(|(k, v)| (k, Some(RefKind::Mut(v))))
@@ -150,25 +144,25 @@ where
     }
 }
 
-impl<'data, K, V, S> Extend<(K, &'data V)> for RefKindMap<'data, K, V, S>
+impl<'a, K, V, S> Extend<(K, &'a V)> for RefKindMap<'a, K, V, S>
 where
     K: Eq + Hash,
-    V: ?Sized,
+    V: ?Sized + 'a,
     S: BuildHasher,
 {
-    fn extend<T: IntoIterator<Item = (K, &'data V)>>(&mut self, iter: T) {
+    fn extend<T: IntoIterator<Item = (K, &'a V)>>(&mut self, iter: T) {
         let iter = iter.into_iter().map(|(k, v)| (k, Some(RefKind::Ref(v))));
         self.map.extend(iter)
     }
 }
 
-impl<'data, K, V, S> Extend<(K, &'data mut V)> for RefKindMap<'data, K, V, S>
+impl<'a, K, V, S> Extend<(K, &'a mut V)> for RefKindMap<'a, K, V, S>
 where
     K: Eq + Hash,
-    V: ?Sized,
+    V: ?Sized + 'a,
     S: BuildHasher,
 {
-    fn extend<T: IntoIterator<Item = (K, &'data mut V)>>(&mut self, iter: T) {
+    fn extend<T: IntoIterator<Item = (K, &'a mut V)>>(&mut self, iter: T) {
         let iter = iter.into_iter().map(|(k, v)| (k, Some(RefKind::Mut(v))));
         self.map.extend(iter)
     }
