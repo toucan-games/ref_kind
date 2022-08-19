@@ -1,4 +1,4 @@
-use std::collections::hash_map::{RandomState, Entry};
+use std::collections::hash_map::{Entry, RandomState};
 use std::collections::HashMap;
 use std::hash::{BuildHasher, Hash};
 
@@ -66,9 +66,9 @@ where
                         let r#ref = ref_kind.into_ref();
                         occupied.insert(Some(RefKind::Ref(r#ref)));
                         Some(r#ref)
-                    },
+                    }
                 }
-            },
+            }
             Entry::Vacant(_) => None,
         }
     }
@@ -89,9 +89,9 @@ where
                         let ref_kind = occupied.insert(None).expect(BORROWED_MUTABLY);
                         let r#mut = ref_kind.into_mut().expect(BORROWED_IMMUTABLY);
                         Some(r#mut)
-                    },
+                    }
                 }
-            },
+            }
             Entry::Vacant(_) => None,
         }
     }
