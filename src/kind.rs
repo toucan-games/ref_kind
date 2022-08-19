@@ -15,8 +15,8 @@ impl<'a, T> RefKind<'a, T>
 where
     T: ?Sized + 'a,
 {
-    /// Returns an immutable reference from the struct.
-    pub fn get(&self) -> &T {
+    /// Returns an immutable reference from the [`RefKind`].
+    pub fn get_ref(&self) -> &T {
         match self {
             RefKind::Ref(r#ref) => *r#ref,
             RefKind::Mut(r#mut) => &**r#mut,
@@ -29,6 +29,26 @@ where
         match self {
             RefKind::Ref(_) => None,
             RefKind::Mut(r#mut) => Some(*r#mut),
+        }
+    }
+
+    /// Converts [`RefKind`] into immutable reference
+    /// with the same lifetime as per creation.
+    pub fn into_ref(self) -> &'a T {
+        match self {
+            RefKind::Ref(r#ref) => r#ref,
+            RefKind::Mut(r#mut) => &*r#mut,
+        }
+    }
+
+    /// Converts [`RefKind`] into optional mutable reference
+    /// with the same lifetime as per creation.
+    ///
+    /// Returns [`None`] if contained reference was immutable.
+    pub fn into_mut(self) -> Option<&'a mut T> {
+        match self {
+            RefKind::Ref(_) => None,
+            RefKind::Mut(r#mut) => Some(r#mut),
         }
     }
 }

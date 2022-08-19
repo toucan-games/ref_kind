@@ -1,4 +1,4 @@
-use std::collections::hash_map::RandomState;
+use std::collections::hash_map::{RandomState, Entry};
 use std::collections::HashMap;
 use std::hash::{BuildHasher, Hash};
 
@@ -30,7 +30,7 @@ where
     pub fn get_ref(&self, key: &K) -> Option<&V> {
         let option = self.map.get(key)?.as_ref();
         let ref_kind = option.expect(BORROWED_MUTABLY);
-        let r#ref = ref_kind.get();
+        let r#ref = ref_kind.get_ref();
         Some(r#ref)
     }
 
@@ -56,25 +56,21 @@ where
     ///
     /// Panics if mutable reference of the value was already moved out of the map.
     pub fn move_ref(&mut self, key: K) -> Option<&'a V> {
-        let option = self.map.get(&key)?.as_ref();
-        let ref_kind = option.expect(BORROWED_MUTABLY);
-        let r#ref = match ref_kind {
-            RefKind::Ref(r#ref) => *r#ref,
-            RefKind::Mut(_) => {
-                let option = self.map.remove(&key)?;
-                let ref_kind = option.expect(BORROWED_MUTABLY);
+        match self.map.entry(key) {
+            Entry::Occupied(mut occupied) => {
+                let ref_kind = occupied.get_mut().as_mut().expect(BORROWED_MUTABLY);
                 match ref_kind {
-                    RefKind::Ref(_) => unreachable!(),
-                    RefKind::Mut(r#mut) => {
-                        let r#ref = &*r#mut;
-                        let ref_kind = Some(RefKind::Ref(r#ref));
-                        self.map.insert(key, ref_kind);
-                        r#ref
-                    }
+                    RefKind::Ref(r#ref) => Some(*r#ref),
+                    RefKind::Mut(_) => {
+                        let ref_kind = occupied.insert(None).expect(BORROWED_MUTABLY);
+                        let r#ref = ref_kind.into_ref();
+                        occupied.insert(Some(RefKind::Ref(r#ref)));
+                        Some(r#ref)
+                    },
                 }
-            }
-        };
-        Some(r#ref)
+            },
+            Entry::Vacant(_) => None,
+        }
     }
 
     /// Moves a mutable reference of the value out of this map.
@@ -84,20 +80,20 @@ where
     /// Panics if mutable reference of the value was already moved out of the map
     /// or the value was already borrowed as immutable.
     pub fn move_mut(&mut self, key: K) -> Option<&'a mut V> {
-        let option = self.map.remove(&key)?;
-        let ref_kind = option.expect(BORROWED_MUTABLY);
-        let r#mut = match ref_kind {
-            RefKind::Ref(r#ref) => {
-                let ref_kind = Some(RefKind::Ref(r#ref));
-                self.map.insert(key, ref_kind);
-                borrowed_immutably_error()
-            }
-            RefKind::Mut(r#mut) => {
-                self.map.insert(key, None);
-                r#mut
-            }
-        };
-        Some(r#mut)
+        match self.map.entry(key) {
+            Entry::Occupied(mut occupied) => {
+                let ref_kind = occupied.get_mut().as_mut().expect(BORROWED_MUTABLY);
+                match ref_kind {
+                    RefKind::Ref(_) => borrowed_immutably_error(),
+                    RefKind::Mut(_) => {
+                        let ref_kind = occupied.insert(None).expect(BORROWED_MUTABLY);
+                        let r#mut = ref_kind.into_mut().expect(BORROWED_IMMUTABLY);
+                        Some(r#mut)
+                    },
+                }
+            },
+            Entry::Vacant(_) => None,
+        }
     }
 }
 
