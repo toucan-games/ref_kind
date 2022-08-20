@@ -525,9 +525,16 @@ where
     /// This function copies an immutable reference or replaces mutable reference with immutable one,
     /// preserving an immutable reference in this map.
     ///
+    /// The supplied key may be any borrowed form of the map's key type, but
+    /// [`Hash`] and [`Eq`] on the borrowed form *must* match those for
+    /// the key type.
+    ///
     /// # Panics
     ///
     /// Panics if mutable reference of the value was already moved out of the map.
+    ///
+    /// [`Eq`]: https://doc.rust-lang.org/std/cmp/trait.Eq.html
+    /// [`Hash`]: https://doc.rust-lang.org/std/hash/trait.Hash.html
     pub fn move_ref<Q>(&mut self, key: &Q) -> Option<&'a V>
     where
         K: Borrow<Q>,
@@ -552,10 +559,17 @@ where
 
     /// Moves a mutable reference of the value out of this map.
     ///
+    /// The supplied key may be any borrowed form of the map's key type, but
+    /// [`Hash`] and [`Eq`] on the borrowed form *must* match those for
+    /// the key type.
+    ///
     /// # Panics
     ///
     /// Panics if mutable reference of the value was already moved out of the map
     /// or the value was already borrowed as immutable.
+    ///
+    /// [`Eq`]: https://doc.rust-lang.org/std/cmp/trait.Eq.html
+    /// [`Hash`]: https://doc.rust-lang.org/std/hash/trait.Hash.html
     pub fn move_mut<Q>(&mut self, key: &Q) -> Option<&'a mut V>
     where
         K: Borrow<Q>,
