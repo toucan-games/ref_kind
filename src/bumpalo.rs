@@ -15,6 +15,7 @@ use crate::kind::RefKind;
 ///
 /// Bump allocation is useful to preserve heap space when creating new map.
 /// Just drop this instance of map, reset the bump and create new instance while reusing heap space.
+#[cfg_attr(docsrs, doc(cfg(feature = "bumpalo")))]
 #[repr(transparent)]
 pub struct BumpRefKindMap<'a, 'bump, K, V, S = DefaultHashBuilder>
 where
@@ -68,7 +69,7 @@ where
 {
     /// Returns an immutable reference of the value without preserving lifetime of the owner.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// Panics if mutable reference of the value was already moved out of the map.
     pub fn get_ref(&self, key: &K) -> Option<&V> {
@@ -80,7 +81,7 @@ where
 
     /// Returns a mutable reference of the value without preserving lifetime of the owner.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// Panics if mutable reference of the value was already moved out of the map
     /// or the value was already borrowed as immutable.
@@ -96,7 +97,7 @@ where
     /// This function copies an immutable reference or replaces mutable reference with immutable one,
     /// preserving an immutable reference in this map.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// Panics if mutable reference of the value was already moved out of the map.
     pub fn move_ref(&mut self, key: K) -> Option<&'a V> {
@@ -119,7 +120,7 @@ where
 
     /// Moves a mutable reference of the value out of this map.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// Panics if mutable reference of the value was already moved out of the map
     /// or the value was already borrowed as immutable.

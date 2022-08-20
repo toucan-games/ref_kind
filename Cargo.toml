@@ -10,6 +10,10 @@ keywords = ["ref", "safe", "mutability", "no-std"]
 categories = ["data-structures", "rust-patterns", "no-std"]
 edition = "2021"
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
 [dependencies]
 bumpalo = { version = "3.11.0", optional = true }
 hashbrown = "0.12.3"

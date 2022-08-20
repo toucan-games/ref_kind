@@ -1,6 +1,7 @@
 #![no_std]
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 //! Different reference kinds in Rust.
 //!
@@ -44,10 +45,14 @@
 //!
 //! [`HashMap`]: std::collections::HashMap
 
+#[cfg(doc)]
+extern crate std;
+
 pub use kind::RefKind;
 pub use map::RefKindMap;
 
 #[cfg(feature = "bumpalo")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bumpalo")))]
 pub mod bumpalo;
 mod kind;
 mod map;

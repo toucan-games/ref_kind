@@ -1,0 +1,3 @@
+[toolchain]
+# Replace with "nightly" to play with unstable features
+channel = "stable"
