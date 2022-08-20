@@ -43,10 +43,7 @@
 //!
 //! No `unsafe` code is needed!
 //!
-//! [`HashMap`]: std::collections::HashMap
-
-#[cfg(doc)]
-extern crate std;
+//! [`HashMap`]: https://doc.rust-lang.org/std/collections/struct.HashMap.html
 
 pub use kind::RefKind;
 pub use map::RefKindMap;
