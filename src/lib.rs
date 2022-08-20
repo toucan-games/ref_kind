@@ -47,5 +47,7 @@
 pub use kind::RefKind;
 pub use map::RefKindMap;
 
+#[cfg(feature = "bumpalo")]
+pub mod bumpalo;
 mod kind;
 mod map;
