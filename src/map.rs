@@ -1,6 +1,7 @@
-use std::collections::hash_map::{Entry, RandomState};
-use std::collections::HashMap;
-use std::hash::{BuildHasher, Hash};
+use core::hash::{BuildHasher, Hash};
+
+use hashbrown::hash_map::{DefaultHashBuilder, Entry};
+use hashbrown::HashMap;
 
 use crate::kind::RefKind;
 
@@ -9,7 +10,7 @@ use crate::kind::RefKind;
 /// This type provides methods for retrieving references (either immutable or mutable)
 /// by moving them out of the map to preserve specified lifetime of the owner.
 #[repr(transparent)]
-pub struct RefKindMap<'a, K, V, S = RandomState>
+pub struct RefKindMap<'a, K, V, S = DefaultHashBuilder>
 where
     V: ?Sized + 'a,
 {
