@@ -6,8 +6,8 @@ authors = ["tuguzT <timurka.tugushev@gmail.com>"]
 repository = "https://github.com/toucan-rust/ref_kind"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
-keywords = ["ref", "safe", "mutability"]
-categories = ["data-structures", "rust-patterns"]
+keywords = ["ref", "safe", "mutability", "no-std"]
+categories = ["data-structures", "rust-patterns", "no-std"]
 edition = "2021"
 
 [dependencies]
