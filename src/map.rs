@@ -79,7 +79,6 @@ where
     ///
     /// This number is a lower bound; the map might be able to hold
     /// more, but is guaranteed to be able to hold at least this many.
-    #[cfg_attr(feature = "inline-more", inline)]
     pub fn capacity(&self) -> usize {
         self.map.capacity()
     }

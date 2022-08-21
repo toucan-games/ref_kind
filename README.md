@@ -33,7 +33,24 @@ assert_eq!(*hello, 0);
 assert_eq!(*answer, 42);
 ```
 
-No `unsafe` code is needed!
+This crate used to be the part of `toucan_ecs` crate,
+but now was moved into the separate crate!
+
+## `#![no_std]` support
+
+This crate is a `no_std` crate. It depends only on the `alloc` and `core` crates.
+
+## `#![forbid(unsafe_code)]`
+
+This crate contains no `unsafe` code.
+
+## Flags
+
+This crate has the following Cargo features:
+
+| Feature name | Description                                                       |
+|--------------|-------------------------------------------------------------------|
+| `bumpalo`    | Compatibility with `bumpalo` crate to be able to reuse heap space |
 
 ## License
 
