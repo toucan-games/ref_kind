@@ -33,7 +33,7 @@ where
     }
 
     /// Converts [`RefKind`] into immutable reference
-    /// with the same lifetime as per creation.
+    /// with the lifetime of the owner.
     pub fn into_ref(self) -> &'a T {
         match self {
             RefKind::Ref(r#ref) => r#ref,
@@ -42,7 +42,7 @@ where
     }
 
     /// Converts [`RefKind`] into optional mutable reference
-    /// with the same lifetime as per creation.
+    /// with the lifetime of the owner.
     ///
     /// Returns [`None`] if contained reference was immutable.
     pub fn into_mut(self) -> Option<&'a mut T> {

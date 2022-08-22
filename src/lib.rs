@@ -5,65 +5,19 @@
 
 //! Different reference kinds in Rust.
 //!
-//! Provides 2 kinds of reference: immutable and mutable. All of them represented in one enum [`RefKind`],
-//! which allows you to store immutable and mutable references together.
+//! Provides 2 kinds of reference: [immutable](RefKind::Ref) and [mutable](RefKind::Mut).
+//! All of them represented in one enum [`RefKind`], which allows to store immutable and mutable references together.
 //!
-//! In addition, this crate contains [`RefKindMap`] which is a [`HashMap`] of reference kinds.
-//! This structure can easily be created from [`HashMap`] iterator (immutable or mutable one):
-//!
-//! ```
-//! use std::collections::HashMap;
-//! use ref_kind::RefKindMap;
-//!
-//! let mut map = HashMap::new();
-//! map.insert("Hello World", 0);
-//! map.insert("The Answer to the Ultimate Question of Life, the Universe, and Everything", 42);
-//!
-//! let mut refs = map.iter_mut().map(|(&k, v)| (k, v)).collect::<RefKindMap<_, _>>();
-//! ```
-//!
-//! Then it can be used to retrieve multiple mutable references from the [`HashMap`]:
-//!
-//! ```
-//! # use std::collections::HashMap;
-//! # use ref_kind::RefKindMap;
-//! #
-//! # let mut map = HashMap::new();
-//! # map.insert("Hello World", 0);
-//! # map.insert("The Answer to the Ultimate Question of Life, the Universe, and Everything", 42);
-//! #
-//! # let mut refs = map.iter_mut().map(|(&k, v)| (k, v)).collect::<RefKindMap<_, _>>();
-//! #
-//! let hello = refs.move_mut("Hello World").unwrap();
-//! let answer = refs.move_mut("The Answer to the Ultimate Question of Life, the Universe, and Everything").unwrap();
-//!
-//! assert_eq!(*hello, 0);
-//! assert_eq!(*answer, 42);
-//! ```
+//! TODO: replace custom types with trait which will add functionality to existing types
 //!
 //! ## `#![no_std]` support
 //!
-//! This crate is a `no_std` crate. It depends only on the `alloc` and `core` crates.
+//! This crate is a `no_std` crate. It depends only on the `core` crate.
 //!
 //! ## `#![forbid(unsafe_code)]`
 //!
 //! This crate contains no `unsafe` code.
-//!
-//! ## Flags
-//!
-//! This crate has the following Cargo features:
-//!
-//! | Feature name | Description                                                       |
-//! |--------------|-------------------------------------------------------------------|
-//! | `bumpalo`    | Compatibility with `bumpalo` crate to be able to reuse heap space |
-//!
-//! [`HashMap`]: https://doc.rust-lang.org/std/collections/struct.HashMap.html
 
 pub use kind::RefKind;
-pub use map::RefKindMap;
 
-#[cfg(feature = "bumpalo")]
-#[cfg_attr(docsrs, doc(cfg(feature = "bumpalo")))]
-pub mod bumpalo;
 mod kind;
-mod map;
