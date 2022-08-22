@@ -44,6 +44,10 @@
 //! // Move it again: no panic here because immutable reference was copied
 //! let four_again = many.move_ref(4).unwrap();
 //! assert_eq!(four, four_again);
+//!
+//! // This call will return an error because vector contains no reference by index 1
+//! let one_again = many.try_move_ref(1);
+//! assert!(one_again.is_err());
 //! ```
 //!
 //! ## `#![no_std]` support
@@ -55,7 +59,7 @@
 //! This crate contains no `unsafe` code.
 
 pub use kind::RefKind;
-pub use many::Many;
+pub use many::{Many, MoveError, Result};
 
 mod array;
 mod kind;

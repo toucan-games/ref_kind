@@ -1,5 +1,5 @@
 use crate::kind::RefKind;
-use crate::many::Many;
+use crate::many::{Many, MoveError, Result};
 
 /// Implementation of [`Many`] trait for slice of `Option<RefKind<'a, T>>`.
 impl<'a, T> Many<'a> for [Option<RefKind<'a, T>>]
@@ -10,27 +10,33 @@ where
 
     type Key = usize;
 
-    fn move_ref(&mut self, key: Self::Key) -> Option<&'a Self::Item> {
-        let elem = self.get_mut(key)?;
-        let ref_kind = elem.take().expect(BORROWED_MUTABLY);
+    fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>> {
+        let elem = match self.get_mut(key) {
+            Some(elem) => elem,
+            None => return Ok(None),
+        };
+        let ref_kind = elem.take().ok_or(MoveError::BorrowedMutably)?;
 
         let r#ref = ref_kind.into_ref();
         *elem = Some(RefKind::Ref(r#ref));
-        Some(r#ref)
+        Ok(Some(r#ref))
     }
 
-    fn move_mut(&mut self, key: Self::Key) -> Option<&'a mut Self::Item> {
-        let elem = self.get_mut(key)?;
-        let ref_kind = elem.take().expect(BORROWED_MUTABLY);
+    fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>> {
+        let elem = match self.get_mut(key) {
+            Some(elem) => elem,
+            None => return Ok(None),
+        };
+        let ref_kind = elem.take().ok_or(MoveError::BorrowedMutably)?;
 
         let r#mut = match ref_kind {
             RefKind::Ref(r#ref) => {
                 *elem = Some(RefKind::Ref(r#ref));
-                borrowed_immutably_error()
+                return Err(MoveError::BorrowedImmutably);
             }
             RefKind::Mut(r#mut) => r#mut,
         };
-        Some(r#mut)
+        Ok(Some(r#mut))
     }
 }
 
@@ -43,20 +49,11 @@ where
 
     type Key = usize;
 
-    fn move_ref(&mut self, key: Self::Key) -> Option<&'a Self::Item> {
-        self.as_mut_slice().move_ref(key)
+    fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>> {
+        self.as_mut_slice().try_move_ref(key)
     }
 
-    fn move_mut(&mut self, key: Self::Key) -> Option<&'a mut Self::Item> {
-        self.as_mut_slice().move_mut(key)
+    fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>> {
+        self.as_mut_slice().try_move_mut(key)
     }
-}
-
-const BORROWED_IMMUTABLY: &str = "reference was already borrowed immutably";
-const BORROWED_MUTABLY: &str = "reference was already borrowed mutably";
-
-#[cold]
-#[track_caller]
-fn borrowed_immutably_error() -> ! {
-    panic!("{}", BORROWED_IMMUTABLY)
 }

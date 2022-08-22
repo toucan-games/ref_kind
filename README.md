@@ -43,6 +43,10 @@ assert_eq!(*four, 16);
 // Move it again: no panic here because immutable reference was copied
 let four_again = many.move_ref(4).unwrap();
 assert_eq!(four, four_again);
+
+// This call will return an error because vector contains no reference by index 1
+let one_again = many.try_move_ref(1);
+assert!(one_again.is_err());
 ```
 
 This crate used to be the part of `toucan_ecs` crate,
