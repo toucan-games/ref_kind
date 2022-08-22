@@ -6,7 +6,7 @@ use core::fmt::{Display, Formatter};
 /// by moving them out of the collection to preserve the lifetime of the owner.
 /// This is useful when it is needed to get **many** mutable references
 /// on different elements of the owner collection.
-/// See [crate documentation](crate) for a detained explanation.
+/// See [crate documentation](crate) for a detailed explanation and an example.
 ///
 /// This trait is usually implemented for collections of `Option<RefKind<'a, T>>` elements
 /// which allows for the implementation to replace [`Some`] with [`None`] when moving out of the collection.
