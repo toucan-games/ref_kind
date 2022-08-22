@@ -4,33 +4,45 @@
 [![Docs](https://docs.rs/ref_kind/badge.svg)](https://docs.rs/ref_kind)
 ![License](https://img.shields.io/badge/license-MIT%20OR%20Apache%202.0-blue.svg)
 
-Different reference kinds in Rust.
+This crate provides 2 kinds of reference: immutable and mutable.
+All of them represented in one enum `RefKind`, which allows to store immutable and mutable references together.
 
-Provides 2 kinds of reference: immutable and mutable. All of them represented in one enum `RefKind`,
-which allows you to store immutable and mutable references together.
+But the most importantly, this crate allows to retrieve **many** mutable references
+out of the collection by creating a new collection which holds these references.
 
-In addition, this crate contains `RefKindMap` which is a `HashMap` of reference kinds.
-This structure can easily be created from `HashMap` iterator (immutable or mutable one):
+For that very case, crate defines `Many` trait which is implemented
+for arrays and slices of `Option<RefKind<'a, T>>` elements.
 
-```rust
-use std::collections::HashMap;
-use ref_kind::RefKindMap;
+But nothing stops you to implement this trait for other collections as well!
 
-let mut map = HashMap::new();
-map.insert("Hello World", 0);
-map.insert("The Answer to the Ultimate Question of Life, the Universe, and Everything", 42);
-
-let mut refs = map.iter_mut().map(|(&k, v)| (k, v)).collect::<RefKindMap<_, _>>();
-```
-
-Then it can be used to retrieve multiple mutable references from the `HashMap`:
+## Example
 
 ```rust
-let hello = refs.move_mut("Hello World").unwrap();
-let answer = refs.move_mut("The Answer to the Ultimate Question of Life, the Universe, and Everything").unwrap();
+use core::array;
 
-assert_eq!(*hello, 0);
-assert_eq!(*answer, 42);
+use ref_kind::{Many, RefKind};
+
+// Create an array of square of integers from 0 to 9
+let mut array: [_; 10] = array::from_fn(|i| i * i);
+
+// Create vector of mutable references on all of the array elements
+let mut many = array
+    .iter_mut()
+    .map(|r#mut| Some(RefKind::Mut(r#mut)))
+    .collect::<Vec<_>>();
+
+// Move out mutable reference by index 1
+// It is no longer in the vector
+let one = many.move_mut(1).unwrap();
+assert_eq!(*one, 1);
+
+// Move out immutable reference by index 4
+// Vector now contains immutable reference, not mutable one
+let four = many.move_ref(4).unwrap();
+assert_eq!(*four, 16);
+// Move it again: no panic here because immutable reference was copied
+let four_again = many.move_ref(4).unwrap();
+assert_eq!(four, four_again);
 ```
 
 This crate used to be the part of `toucan_ecs` crate,
@@ -38,19 +50,11 @@ but now was moved into the separate crate!
 
 ## `#![no_std]` support
 
-This crate is a `no_std` crate. It depends only on the `alloc` and `core` crates.
+This crate is a `no_std` crate. It depends only on the `core` crate.
 
 ## `#![forbid(unsafe_code)]`
 
 This crate contains no `unsafe` code.
-
-## Flags
-
-This crate has the following Cargo features:
-
-| Feature name | Description                                                       |
-|--------------|-------------------------------------------------------------------|
-| `bumpalo`    | Compatibility with `bumpalo` crate to be able to reuse heap space |
 
 ## License
 

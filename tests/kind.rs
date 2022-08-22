@@ -4,7 +4,9 @@ use ref_kind::RefKind;
 fn from() {
     let number = 42;
     let number_ref = RefKind::from(&number);
-    assert!(matches!(number_ref, RefKind::Ref(_)));
+
+    let is_ref = matches!(number_ref, RefKind::Ref(_));
+    assert!(is_ref);
     assert_eq!(RefKind::Ref(&42), number_ref);
 }
 
@@ -12,6 +14,8 @@ fn from() {
 fn from_mut() {
     let mut number = 42;
     let number_mut = RefKind::from(&mut number);
-    assert!(matches!(number_mut, RefKind::Mut(_)));
+
+    let is_mut = matches!(number_mut, RefKind::Mut(_));
+    assert!(is_mut);
     assert_eq!(RefKind::Mut(&mut 42), number_mut);
 }
