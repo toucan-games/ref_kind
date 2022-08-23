@@ -68,3 +68,5 @@ mod alloc;
 mod kind;
 mod many;
 mod slice;
+#[cfg(feature = "std")]
+mod std;

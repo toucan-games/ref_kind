@@ -16,3 +16,4 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
 alloc = []
+std = ["alloc"]
