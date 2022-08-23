@@ -5,6 +5,7 @@ use crate::kind::RefKind;
 use crate::many::{Many, MoveError, Result};
 
 /// Implementation of [`Many`] trait for [`HashMap`] of `Option<RefKind<'a, T>>` elements.
+#[cfg_attr(docsrs, doc(cfg(feature = "hashbrown")))]
 impl<'a, K, V, S> Many<'a> for HashMap<K, Option<RefKind<'a, V>>, S>
 where
     K: Hash + Eq,
@@ -46,6 +47,7 @@ where
 }
 
 /// Implementation of [`Many`] trait for [`HashMap`] of `Option<&'a mut T>` elements.
+#[cfg_attr(docsrs, doc(cfg(feature = "hashbrown")))]
 impl<'a, K, V, S> Many<'a> for HashMap<K, Option<&'a mut V>, S>
 where
     K: Hash + Eq,

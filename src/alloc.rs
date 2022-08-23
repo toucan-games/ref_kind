@@ -7,6 +7,7 @@ use crate::kind::RefKind;
 use crate::many::{Many, MoveError, Result};
 
 /// Implementation of [`Many`] trait for [`VecDeque`] of `Option<RefKind<'a, T>>` elements.
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<'a, T> Many<'a> for VecDeque<Option<RefKind<'a, T>>>
 where
     T: ?Sized + 'a,
@@ -46,6 +47,7 @@ where
 }
 
 /// Implementation of [`Many`] trait for [`VecDeque`] of `Option<&'a mut T>` elements.
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<'a, T> Many<'a> for VecDeque<Option<&'a mut T>>
 where
     T: ?Sized + 'a,
@@ -74,6 +76,7 @@ where
 }
 
 /// Implementation of [`Many`] trait for [`BTreeMap`] of `Option<RefKind<'a, T>>` elements.
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<'a, K, V> Many<'a> for BTreeMap<K, Option<RefKind<'a, V>>>
 where
     K: Ord,
@@ -114,6 +117,7 @@ where
 }
 
 /// Implementation of [`Many`] trait for [`BTreeMap`] of `Option<&'a mut T>` elements.
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<'a, K, V> Many<'a> for BTreeMap<K, Option<&'a mut V>>
 where
     K: Ord,

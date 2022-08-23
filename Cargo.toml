@@ -18,9 +18,9 @@ rustdoc-args = ["--cfg", "docsrs"]
 version = "0.12.3"
 optional = true
 default-features = false
-features = ["inline-more"]
 
 [features]
+default = ["std"]
 alloc = []
 std = ["alloc"]
 hashbrown = ["dep:hashbrown"]

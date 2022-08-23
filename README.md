@@ -28,7 +28,7 @@ let mut array: [_; 10] = array::from_fn(|i| i * i);
 // Create collection of mutable references on all of the array elements
 let mut many: [_; 10] = array
     .iter_mut()
-    .map(|r#mut| Some(RefKind::Mut(r#mut)))
+    .map(|sq| Some(RefKind::Mut(sq)))
     .collect::<Vec<_>>()
     .try_into()
     .unwrap();
@@ -51,16 +51,40 @@ let one_again = many.try_move_ref(1);
 assert_eq!(one_again, Err(MoveError::BorrowedMutably));
 ```
 
-This crate used to be the part of `toucan_ecs` crate,
+This crate used to be the part of `toucan_ecs` crate (which is in early development stage),
 but now was moved into the separate crate!
 
 ## `#![no_std]` support
 
 This crate is a `no_std` crate. It depends only on the `core` crate.
 
+`std` feature of the crate is enabled by default, so to use it in `no_std` environment,
+you should disable default features of this crate in Cargo.toml:
+
+```toml
+[dependencies]
+ref_kind = { version = "0.4.0", default-features = false }
+```
+
 ## `#![forbid(unsafe_code)]`
 
 This crate contains no `unsafe` code.
+
+## Flags
+
+This crate has the following Cargo features:
+
+| Feature name | Description                                                                           |
+|--------------|---------------------------------------------------------------------------------------|
+| `alloc`      | Implements `Many` trait for `VecDeque` and `BTreeMap` in `alloc` crate                |
+| `std`        | Implements `Many` trait for `HashMap` in standard library, depends on `alloc` feature |
+| `hashbrown`  | Implements `Many` trait for `HashMap` in `hashbrown` crate                            |
+
+Feature `std` is enabled by default.
+You can disable it by using `default-features = false` in Cargo.toml.
+
+These features were added to this crate to make it usable
+with common Rust collections, such as `Vec` and `HashMap`.
 
 ## License
 
