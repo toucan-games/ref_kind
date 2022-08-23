@@ -39,3 +39,31 @@ where
         Ok(Some(r#mut))
     }
 }
+
+/// Implementation of [`Many`] trait for slice of `Option<&'a mut T>` elements.
+impl<'a, T> Many<'a> for [Option<&'a mut T>]
+where
+    T: ?Sized + 'a,
+{
+    type Item = T;
+
+    type Key = usize;
+
+    fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>> {
+        let r#mut = match self.try_move_mut(key)? {
+            Some(elem) => elem,
+            None => return Ok(None),
+        };
+        let r#ref = &*r#mut;
+        Ok(Some(r#ref))
+    }
+
+    fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>> {
+        let elem = match self.get_mut(key) {
+            Some(elem) => elem,
+            None => return Ok(None),
+        };
+        let r#mut = elem.take().ok_or(MoveError::BorrowedMutably)?;
+        Ok(Some(r#mut))
+    }
+}
