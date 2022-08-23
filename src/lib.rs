@@ -65,6 +65,8 @@ pub use many::{Many, MoveError, Result};
 
 #[cfg(feature = "alloc")]
 mod alloc;
+#[cfg(feature = "hashbrown")]
+mod hashbrown;
 mod kind;
 mod many;
 mod slice;
