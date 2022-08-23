@@ -2,7 +2,7 @@ use core::fmt::{Display, Formatter};
 
 /// Trait for collections which hold different kinds of reference.
 ///
-/// This type provides methods for retrieving references (either immutable or mutable)
+/// This trait provides methods for retrieving references (either immutable or mutable)
 /// by moving them out of the collection to preserve the lifetime of the owner.
 /// This is useful when it is needed to get **many** mutable references
 /// on different elements of the owner collection.

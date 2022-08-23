@@ -1,7 +1,7 @@
 use crate::kind::RefKind;
 use crate::many::{Many, MoveError, Result};
 
-/// Implementation of [`Many`] trait for slice of `Option<RefKind<'a, T>>`.
+/// Implementation of [`Many`] trait for slice of `Option<RefKind<'a, T>>` elements.
 impl<'a, T> Many<'a> for [Option<RefKind<'a, T>>]
 where
     T: ?Sized + 'a,
@@ -37,23 +37,5 @@ where
             RefKind::Mut(r#mut) => r#mut,
         };
         Ok(Some(r#mut))
-    }
-}
-
-/// Implementation of [`Many`] trait for array of `Option<RefKind<'a, T>>`.
-impl<'a, T, const N: usize> Many<'a> for [Option<RefKind<'a, T>>; N]
-where
-    T: ?Sized + 'a,
-{
-    type Item = T;
-
-    type Key = usize;
-
-    fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>> {
-        self.as_mut_slice().try_move_ref(key)
-    }
-
-    fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>> {
-        self.as_mut_slice().try_move_mut(key)
     }
 }
