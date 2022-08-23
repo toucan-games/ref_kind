@@ -15,32 +15,32 @@ where
     type Item = T;
 
     fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>> {
-        let elem = match self.get_mut(key) {
-            Some(elem) => elem,
+        let item = match self.get_mut(key) {
+            Some(item) => item,
             None => return Ok(None),
         };
-        let ref_kind = elem.take().ok_or(MoveError::BorrowedMutably)?;
+        let ref_kind = item.take().ok_or(MoveError::BorrowedMutably)?;
 
-        let r#ref = ref_kind.into_ref();
-        *elem = Some(RefKind::Ref(r#ref));
-        Ok(Some(r#ref))
+        let shared = ref_kind.into_ref();
+        *item = Some(RefKind::Ref(shared));
+        Ok(Some(shared))
     }
 
     fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>> {
-        let elem = match self.get_mut(key) {
-            Some(elem) => elem,
+        let item = match self.get_mut(key) {
+            Some(item) => item,
             None => return Ok(None),
         };
-        let ref_kind = elem.take().ok_or(MoveError::BorrowedMutably)?;
+        let ref_kind = item.take().ok_or(MoveError::BorrowedMutably)?;
 
-        let r#mut = match ref_kind {
-            RefKind::Ref(r#ref) => {
-                *elem = Some(RefKind::Ref(r#ref));
+        let unique = match ref_kind {
+            RefKind::Ref(shared) => {
+                *item = Some(RefKind::Ref(shared));
                 return Err(MoveError::BorrowedImmutably);
             }
-            RefKind::Mut(r#mut) => r#mut,
+            RefKind::Mut(unique) => unique,
         };
-        Ok(Some(r#mut))
+        Ok(Some(unique))
     }
 }
 
@@ -56,31 +56,31 @@ where
     type Item = V;
 
     fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>> {
-        let elem = match self.get_mut(&key) {
-            Some(elem) => elem,
+        let item = match self.get_mut(&key) {
+            Some(item) => item,
             None => return Ok(None),
         };
-        let ref_kind = elem.take().ok_or(MoveError::BorrowedMutably)?;
+        let ref_kind = item.take().ok_or(MoveError::BorrowedMutably)?;
 
-        let r#ref = ref_kind.into_ref();
-        *elem = Some(RefKind::Ref(r#ref));
-        Ok(Some(r#ref))
+        let shared = ref_kind.into_ref();
+        *item = Some(RefKind::Ref(shared));
+        Ok(Some(shared))
     }
 
     fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>> {
-        let elem = match self.get_mut(&key) {
-            Some(elem) => elem,
+        let item = match self.get_mut(&key) {
+            Some(item) => item,
             None => return Ok(None),
         };
-        let ref_kind = elem.take().ok_or(MoveError::BorrowedMutably)?;
+        let ref_kind = item.take().ok_or(MoveError::BorrowedMutably)?;
 
-        let r#mut = match ref_kind {
-            RefKind::Ref(r#ref) => {
-                *elem = Some(RefKind::Ref(r#ref));
+        let unique = match ref_kind {
+            RefKind::Ref(shared) => {
+                *item = Some(RefKind::Ref(shared));
                 return Err(MoveError::BorrowedImmutably);
             }
-            RefKind::Mut(r#mut) => r#mut,
+            RefKind::Mut(unique) => unique,
         };
-        Ok(Some(r#mut))
+        Ok(Some(unique))
     }
 }
