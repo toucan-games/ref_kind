@@ -61,7 +61,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! ref_kind = { version = "0.4.0", default-features = false }
+//! ref_kind = { version = "0.4.1", default-features = false }
 //! ```
 //!
 //! ## `#![forbid(unsafe_code)]`
