@@ -88,6 +88,12 @@
 //! [`Vec`]: https://doc.rust-lang.org/std/vec/struct.Vec.html
 //! [`HashMap`]: https://doc.rust-lang.org/std/collections/struct.HashMap.html
 
+#[cfg(feature = "alloc")]
+extern crate alloc as alloc_crate;
+
+#[cfg(feature = "std")]
+extern crate std as std_crate;
+
 pub use kind::RefKind;
 pub use many::{Many, MoveError, Result};
 

@@ -1,7 +1,5 @@
-extern crate std;
-
 use core::hash::{BuildHasher, Hash};
-use std::collections::HashMap;
+use std_crate::collections::HashMap;
 
 use crate::kind::RefKind;
 use crate::many::{Many, MoveError, Result};

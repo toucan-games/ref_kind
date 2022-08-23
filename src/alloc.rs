@@ -1,7 +1,5 @@
-extern crate alloc;
-
-use alloc::collections::BTreeMap;
-use alloc::collections::VecDeque;
+use alloc_crate::collections::BTreeMap;
+use alloc_crate::collections::VecDeque;
 
 use crate::kind::RefKind;
 use crate::many::{Many, MoveError, Result};

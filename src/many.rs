@@ -79,6 +79,10 @@ impl Display for MoveError {
     }
 }
 
+#[cfg(feature = "std")]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+impl std_crate::error::Error for MoveError {}
+
 #[cold]
 #[track_caller]
 fn move_panic(error: MoveError) -> ! {
