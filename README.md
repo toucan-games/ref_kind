@@ -20,7 +20,7 @@ But nothing stops you to implement this trait for other collections as well!
 ```rust
 use core::array;
 
-use ref_kind::{Many, RefKind};
+use ref_kind::{Many, RefKind, MoveError};
 
 // Create an array of square of integers from 0 to 9
 let mut array: [_; 10] = array::from_fn(|i| i * i);
@@ -48,7 +48,7 @@ assert_eq!(four, four_again);
 
 // This call will return an error because `many` contains no reference by index 1
 let one_again = many.try_move_ref(1);
-assert!(one_again.is_err());
+assert_eq!(one_again, Err(MoveError::BorrowedMutably));
 ```
 
 This crate used to be the part of `toucan_ecs` crate,

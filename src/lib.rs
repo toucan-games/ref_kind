@@ -21,7 +21,7 @@
 //! ```
 //! use core::array;
 //!
-//! use ref_kind::{Many, RefKind};
+//! use ref_kind::{Many, RefKind, MoveError};
 //!
 //! // Create an array of square of integers from 0 to 9
 //! let mut array: [_; 10] = array::from_fn(|i| i * i);
@@ -49,7 +49,7 @@
 //!
 //! // This call will return an error because `many` contains no reference by index 1
 //! let one_again = many.try_move_ref(1);
-//! assert!(one_again.is_err());
+//! assert_eq!(one_again, Err(MoveError::BorrowedMutably));
 //! ```
 //!
 //! ## `#![no_std]` support
@@ -63,6 +63,8 @@
 pub use kind::RefKind;
 pub use many::{Many, MoveError, Result};
 
+#[cfg(feature = "alloc")]
+mod alloc;
 mod kind;
 mod many;
 mod slice;

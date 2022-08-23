@@ -60,7 +60,7 @@ pub type Result<T> = core::result::Result<T, MoveError>;
 
 /// Enum that defines errors which can occur when moving reference
 /// out of the collection which implements [`Many`] trait.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum MoveError {
     /// Reference was already moved out of the collection as immutable.
     /// It is not allowed to get mutable reference again, but it is allowed to get immutable one.
