@@ -1,41 +1,29 @@
-use crate::kind::RefKind;
-use crate::many::{Many, MoveError, Result};
+use crate::many::{Many, Result};
 
-/// Implementation of [`Many`] trait for slice of `Option<RefKind<'a, T>>` elements.
-impl<'a, T> Many<'a> for [Option<RefKind<'a, T>>]
+/// Implementation of [`Many`] trait for [slice](prim@slice).
+impl<'a, T> Many<'a, usize> for [T]
 where
-    T: ?Sized + 'a,
+    T: Many<'a, usize>,
 {
-    type Item = T;
+    type Ref = Option<T::Ref>;
 
-    type Key = usize;
-
-    fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>> {
+    fn try_move_ref(&mut self, key: usize) -> Result<Self::Ref> {
         let item = match self.get_mut(key) {
             Some(item) => item,
             None => return Ok(None),
         };
-        let ref_kind = item.take().ok_or(MoveError::BorrowedMutably)?;
-
-        let shared = ref_kind.into_ref();
-        *item = Some(RefKind::Ref(shared));
+        let shared = item.try_move_ref(key)?;
         Ok(Some(shared))
     }
 
-    fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>> {
+    type Mut = Option<T::Mut>;
+
+    fn try_move_mut(&mut self, key: usize) -> Result<Self::Mut> {
         let item = match self.get_mut(key) {
             Some(item) => item,
             None => return Ok(None),
         };
-        let ref_kind = item.take().ok_or(MoveError::BorrowedMutably)?;
-
-        let unique = match ref_kind {
-            RefKind::Ref(shared) => {
-                *item = Some(RefKind::Ref(shared));
-                return Err(MoveError::BorrowedImmutably);
-            }
-            RefKind::Mut(unique) => unique,
-        };
+        let unique = item.try_move_mut(key)?;
         Ok(Some(unique))
     }
 }

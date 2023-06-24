@@ -10,18 +10,15 @@ use core::fmt::{Display, Formatter};
 ///
 /// This trait is usually implemented for collections of `Option<RefKind<'a, T>>` elements
 /// which allows for the implementation to replace [`Some`] with [`None`] when moving out of the collection.
-pub trait Many<'a> {
-    /// The type of element identifier of the collection.
-    type Key;
-
-    /// The type of the elements references of which being moved out.
-    type Item: ?Sized + 'a;
+pub trait Many<'a, Key> {
+    /// The type of a reference which is being moved out.
+    type Ref: 'a;
 
     /// Tries to move an immutable reference out of this collection.
     ///
     /// This function copies an immutable reference or replaces mutable reference with immutable one,
     /// preserving an immutable reference in this collection.
-    fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>>;
+    fn try_move_ref(&mut self, key: Key) -> Result<Self::Ref>;
 
     /// Moves an immutable reference out of this collection.
     ///
@@ -31,15 +28,19 @@ pub trait Many<'a> {
     /// # Panics
     ///
     /// Panics if mutable reference was already moved out of the collection.
-    fn move_ref(&mut self, key: Self::Key) -> Option<&'a Self::Item> {
+    #[track_caller]
+    fn move_ref(&mut self, key: Key) -> Self::Ref {
         match self.try_move_ref(key) {
-            Ok(option) => option,
+            Ok(result) => result,
             Err(error) => move_panic(error),
         }
     }
 
+    /// The type of a mutable reference which is being moved out.
+    type Mut: 'a;
+
     /// Tries to move a mutable reference out of this collection.
-    fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>>;
+    fn try_move_mut(&mut self, key: Key) -> Result<Self::Mut>;
 
     /// Moves a mutable reference out of this collection.
     ///
@@ -47,7 +48,8 @@ pub trait Many<'a> {
     ///
     /// Panics if mutable reference was already moved out of the collection
     /// or the value was already borrowed as immutable.
-    fn move_mut(&mut self, key: Self::Key) -> Option<&'a mut Self::Item> {
+    #[track_caller]
+    fn move_mut(&mut self, key: Key) -> Self::Mut {
         match self.try_move_mut(key) {
             Ok(option) => option,
             Err(error) => move_panic(error),

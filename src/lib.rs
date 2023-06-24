@@ -103,6 +103,7 @@ mod alloc;
 mod hashbrown;
 mod kind;
 mod many;
+mod option;
 mod slice;
 #[cfg(feature = "std")]
 mod std;

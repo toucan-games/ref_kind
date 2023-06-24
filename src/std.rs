@@ -1,47 +1,35 @@
 use core::hash::{BuildHasher, Hash};
 use std_crate::collections::HashMap;
 
-use crate::kind::RefKind;
-use crate::many::{Many, MoveError, Result};
+use crate::many::{Many, Result};
 
-/// Implementation of [`Many`] trait for [`HashMap`] of `Option<RefKind<'a, T>>` elements.
+/// Implementation of [`Many`] trait for [`HashMap`].
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
-impl<'a, K, V, S> Many<'a> for HashMap<K, Option<RefKind<'a, V>>, S>
+impl<'a, K, V, S> Many<'a, K> for HashMap<K, V, S>
 where
     K: Hash + Eq,
-    V: ?Sized + 'a,
+    V: Many<'a, K>,
     S: BuildHasher,
 {
-    type Key = K;
+    type Ref = Option<V::Ref>;
 
-    type Item = V;
-
-    fn try_move_ref(&mut self, key: Self::Key) -> Result<Option<&'a Self::Item>> {
+    fn try_move_ref(&mut self, key: K) -> Result<Self::Ref> {
         let item = match self.get_mut(&key) {
             Some(item) => item,
             None => return Ok(None),
         };
-        let ref_kind = item.take().ok_or(MoveError::BorrowedMutably)?;
-
-        let shared = ref_kind.into_ref();
-        *item = Some(RefKind::Ref(shared));
+        let shared = item.try_move_ref(key)?;
         Ok(Some(shared))
     }
 
-    fn try_move_mut(&mut self, key: Self::Key) -> Result<Option<&'a mut Self::Item>> {
+    type Mut = Option<V::Mut>;
+
+    fn try_move_mut(&mut self, key: K) -> Result<Self::Mut> {
         let item = match self.get_mut(&key) {
             Some(item) => item,
             None => return Ok(None),
         };
-        let ref_kind = item.take().ok_or(MoveError::BorrowedMutably)?;
-
-        let unique = match ref_kind {
-            RefKind::Ref(shared) => {
-                *item = Some(RefKind::Ref(shared));
-                return Err(MoveError::BorrowedImmutably);
-            }
-            RefKind::Mut(unique) => unique,
-        };
+        let unique = item.try_move_mut(key)?;
         Ok(Some(unique))
     }
 }
