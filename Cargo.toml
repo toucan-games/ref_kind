@@ -10,17 +10,15 @@ keywords = ["ref", "safe", "mutability", "no-std"]
 categories = ["data-structures", "rust-patterns", "no-std"]
 edition = "2021"
 
-[package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
-
-[dependencies.hashbrown]
-version = "0.12.3"
-optional = true
-default-features = false
+[dependencies]
+hashbrown = { version = "0.14", default-features = false, optional = true }
 
 [features]
 default = ["std"]
 alloc = []
 std = ["alloc"]
 hashbrown = ["dep:hashbrown"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
