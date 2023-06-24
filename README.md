@@ -51,9 +51,6 @@ let one_again = many.try_move_ref(1);
 assert_eq!(one_again, Err(MoveError::BorrowedMutably));
 ```
 
-This crate used to be the part of `toucan_ecs` crate (which is in early development stage),
-but now was moved into the separate crate!
-
 ## `#![no_std]` support
 
 This crate is a `no_std` crate. It depends only on the `core` crate.
@@ -63,7 +60,7 @@ you should disable default features of this crate in Cargo.toml:
 
 ```toml
 [dependencies]
-ref_kind = { version = "0.4.2", default-features = false }
+ref_kind = { version = "0.5.0", default-features = false }
 ```
 
 ## `#![forbid(unsafe_code)]`
