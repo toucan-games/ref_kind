@@ -12,7 +12,7 @@
 //! out of the collection by creating a new collection which holds these references.
 //!
 //! For that very case, crate defines [`Many`] trait which is implemented
-//! for [slices] of `Option<RefKind<'a, T>>` elements.
+//! for peekable iterators, [slices] and other common collections.
 //!
 //! But nothing stops you to implement this trait for other collections as well!
 //!
@@ -29,7 +29,7 @@
 //! // Create collection of mutable references on all of the array elements
 //! let mut many: [_; 10] = array
 //!     .iter_mut()
-//!     .map(|sq| Some(RefKind::Mut(sq)))
+//!     .map(|sq| Some(RefKind::from(sq)))
 //!     .collect::<Vec<_>>()
 //!     .try_into()
 //!     .unwrap();
@@ -98,6 +98,8 @@ pub use self::{
     kind::RefKind::{self, Mut, Ref},
     many::{Many, MoveError, Result},
 };
+
+pub mod iter;
 
 #[cfg(feature = "alloc")]
 mod alloc;

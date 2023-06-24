@@ -11,7 +11,7 @@ But the most importantly, this crate allows to retrieve **many** mutable referen
 out of the collection by creating a new collection which holds these references.
 
 For that very case, crate defines `Many` trait which is implemented
-for slices of `Option<RefKind<'a, T>>` elements.
+for peekable iterators, slices and other common collections.
 
 But nothing stops you to implement this trait for other collections as well!
 
@@ -28,7 +28,7 @@ let mut array: [_; 10] = array::from_fn(|i| i * i);
 // Create collection of mutable references on all of the array elements
 let mut many: [_; 10] = array
     .iter_mut()
-    .map(|sq| Some(RefKind::Mut(sq)))
+    .map(|sq| Some(RefKind::from(sq)))
     .collect::<Vec<_>>()
     .try_into()
     .unwrap();
@@ -75,7 +75,7 @@ This crate contains no `unsafe` code.
 This crate has the following Cargo features:
 
 | Feature name | Description                                                                           |
-|--------------|---------------------------------------------------------------------------------------|
+| ------------ | ------------------------------------------------------------------------------------- |
 | `alloc`      | Implements `Many` trait for `VecDeque` and `BTreeMap` in `alloc` crate                |
 | `std`        | Implements `Many` trait for `HashMap` in standard library, depends on `alloc` feature |
 | `hashbrown`  | Implements `Many` trait for `HashMap` in `hashbrown` crate                            |
