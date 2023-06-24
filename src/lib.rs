@@ -5,7 +5,7 @@
 
 //! Different reference kinds in Rust.
 //!
-//! This crate provides 2 kinds of reference: [immutable](RefKind::Ref) and [mutable](RefKind::Mut).
+//! This crate provides 2 kinds of reference: [immutable](Ref) and [mutable](Mut).
 //! All of them represented in one enum [`RefKind`], which allows to store immutable and mutable references together.
 //!
 //! But the most importantly, this crate allows to retrieve **many** mutable references
@@ -94,8 +94,10 @@ extern crate alloc as alloc_crate;
 #[cfg(feature = "std")]
 extern crate std as std_crate;
 
-pub use kind::RefKind;
-pub use many::{Many, MoveError, Result};
+pub use self::{
+    kind::RefKind::{self, Mut, Ref},
+    many::{Many, MoveError, Result},
+};
 
 #[cfg(feature = "alloc")]
 mod alloc;

@@ -1,5 +1,5 @@
 use crate::{
-    kind::RefKind,
+    kind::RefKind::{self, Mut, Ref},
     many::{Many, MoveError, Result},
 };
 
@@ -13,7 +13,7 @@ where
         let kind = self.take().ok_or(MoveError::BorrowedMutably)?;
 
         let shared = kind.into_ref();
-        *self = Some(RefKind::Ref(shared));
+        *self = Some(Ref(shared));
         Ok(shared)
     }
 
@@ -23,11 +23,11 @@ where
         let kind = self.take().ok_or(MoveError::BorrowedMutably)?;
 
         let unique = match kind {
-            RefKind::Ref(shared) => {
-                *self = Some(RefKind::Ref(shared));
+            Ref(shared) => {
+                *self = Some(Ref(shared));
                 return Err(MoveError::BorrowedImmutably);
             }
-            RefKind::Mut(unique) => unique,
+            Mut(unique) => unique,
         };
         Ok(unique)
     }

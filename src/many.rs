@@ -75,8 +75,8 @@ pub enum MoveError {
 impl Display for MoveError {
     fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         match self {
-            MoveError::BorrowedImmutably => write!(f, "reference was already borrowed immutably"),
-            MoveError::BorrowedMutably => write!(f, "reference was already borrowed mutably"),
+            Self::BorrowedImmutably => write!(f, "reference was already borrowed immutably"),
+            Self::BorrowedMutably => write!(f, "reference was already borrowed mutably"),
         }
     }
 }
