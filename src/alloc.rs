@@ -3,7 +3,7 @@ use alloc_crate::{
     vec::Vec,
 };
 
-use crate::many::{Many, Result};
+use crate::{Many, Result};
 
 /// Implementation of [`Many`] trait for [`Vec`].
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]

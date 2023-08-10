@@ -10,10 +10,13 @@ All of them represented in one enum `RefKind`, which allows to store immutable a
 But the most importantly, this crate allows to retrieve **many** mutable references
 out of the collection by creating a new collection which holds these references.
 
-For that very case, crate defines `Many` trait which is implemented
-for peekable iterators, slices and other common collections.
+For that very case, crate defines some useful traits:
 
-But nothing stops you to implement this trait for other collections as well!
+- `MoveRef` and `MoveMut` for containers to retrieve corresponding kind of reference,
+- `Move` as a combination of the traits above,
+- `Many` for collections which is implemented for peekable iterators, slices and so on.
+
+But nothing stops you to implement these traits for other types as well!
 
 ## Example
 

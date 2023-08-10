@@ -1,7 +1,7 @@
 use core::hash::{BuildHasher, Hash};
 use std_crate::collections::HashMap;
 
-use crate::many::{Many, Result};
+use crate::{Many, Result};
 
 /// Implementation of [`Many`] trait for [`HashMap`].
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]

@@ -1,7 +1,7 @@
 use core::hash::{BuildHasher, Hash};
 use hashbrown::HashMap;
 
-use crate::many::{Many, Result};
+use crate::{Many, Result};
 
 /// Implementation of [`Many`] trait for [`hashbrown::HashMap`].
 #[cfg_attr(docsrs, doc(cfg(feature = "hashbrown")))]

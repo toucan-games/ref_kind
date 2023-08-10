@@ -1,4 +1,4 @@
-use crate::many::{Many, Result};
+use crate::{Many, Result};
 
 /// Implementation of [`Many`] trait for [slice](prim@slice).
 impl<'a, T> Many<'a, usize> for [T]

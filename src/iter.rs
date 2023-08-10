@@ -3,7 +3,7 @@
 
 use core::iter::Peekable;
 
-use crate::many::{Many, Result};
+use crate::{Many, Result};
 
 /// Type of key for peekable iterator.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
